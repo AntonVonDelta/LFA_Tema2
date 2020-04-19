@@ -9,10 +9,10 @@
 void viewRegex(Element* tree, int order = 0);
 
 // Transform THIS element into a DFA
-NFAGama ElementToDFA(Element* group);
+NFAGama ElementToNFA(Element* group);
 
 // Travels the current level of the given tree and performs <operation> between groups found
-NFAGama RecursiveConvertToDFA(Element* tree);
+NFAGama RecursiveConvertToNFA(Element* tree);
 
 // Process the tree and converts any "free floating" multiplication operations into Groups so that the Recursive parser can just operate on them without
 // any operands-order checks. e.g.  it easier for the input to be represented like this a+(a*b) than a+a*b. The algorithm can just add 'a' with (a*b) and solve the second one recursively

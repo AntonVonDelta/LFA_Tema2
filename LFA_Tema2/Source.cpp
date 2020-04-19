@@ -8,6 +8,7 @@ using namespace std;
 
 
 int main() {
+	// Function descriptions in RegexToNfa.h + explanations in the cpp (better to use VS)
 
 	////////////////// DFA TO REGEX
 	DFA M;
@@ -30,7 +31,7 @@ int main() {
 	cout << endl<<endl;
 
 
-	NFAGama nfa = RecursiveConvertToDFA(processed_data);
+	NFAGama nfa = RecursiveConvertToNFA(processed_data);
 
 	/// Testing this NFA
 	set<int> start = { nfa.getInitialState() };

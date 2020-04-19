@@ -17,34 +17,44 @@ void viewRegex(Element* tree, int order) {
 	cout << string(order, ' ') << "}" << endl;
 }
 
-NFAGama ElementToDFA(Element* group) {
+NFAGama ElementToNFA(Element* group) {
 	if (group == nullptr) throw 10;
 	if (group->type == 1) {
+		// This means this group is actually just one character. We can easily convert it to a NFA
 		if (group->node_loop) {
+
+			// Special case if this caracter is looping on itself e.g a*
 			return NFAGama({ 0,1 }, { group->content[0] }, { {{0,group->content[0] },{1}}, {{0,'.' },{1}}, {{1,'.' },{0}} }, 0, { 1 });
 		}
 		return NFAGama({ 0,1 }, { group->content[0] }, { {{0,group->content[0] },{1}} }, 0, { 1 });
 	}
 	if (group->type == 0) {
-		if (group->subgroup == nullptr) throw 11;
-		NFAGama result = RecursiveConvertToDFA(group->subgroup);
+		// The given group contains subgroups. Convert it recursively
 
+		if (group->subgroup == nullptr) throw 11;
+		NFAGama result = RecursiveConvertToNFA(group->subgroup);
+
+		// Special care if the group is looping on itself
 		if (group->node_loop)
 			result.ApplyLoop();
 		return result;
 	}
-	throw 12;		// Should not get here
+	throw 12;		// Should not get here...we throw an error to catch any bug in the logic of this convertor
 }
-NFAGama RecursiveConvertToDFA(Element* group) {
+NFAGama RecursiveConvertToNFA(Element* group) {
+	// The logic here: we get the first group and read until we hit an operator. Peek the next group and convert it to NFA
+	// Apply that operation between the previous NFA and the next one. The net result is that we operate on two groups at a time
+	// We are assured that the multiplication is configned to individual groups so reading `a+ab` will not add `a+a` and multiply `b`
+	//		we actually get this a+(ab) which is processed as a+ <recursive: a*b>
 	if (group == nullptr) throw 10;
 
 	NFAGama result;
 	Element* it = group;
-	NFAGama prev = ElementToDFA(it);
+	NFAGama prev = ElementToNFA(it);
 
 	while (it != nullptr) {
 		if (it->type == 2 || it->type == 4) {
-			prev = prev.ApplyOperation(ElementToDFA(it->next), it);
+			prev = prev.ApplyOperation(ElementToNFA(it->next), it);
 		}
 		it = it->next;
 	}
@@ -52,6 +62,8 @@ NFAGama RecursiveConvertToDFA(Element* group) {
 }
 
 Element* PostProcess(Element* parent) {
+	// Analyzes the raw elements and separates the multiplication from addition by grouping all multiplciation-operated elements into subgroups in the tree
+	//			i.e a+ab becomes a+(ab)
 	Element* telomere = new Element;
 	*telomere = { -1,string(""),false,parent,nullptr };
 
@@ -66,7 +78,7 @@ Element* PostProcess(Element* parent) {
 	*replacement = { 0, string(""), false, nullptr, nullptr };
 
 	while (it != nullptr) {
-		// Recursive
+		// Recursive. Do this post processing for al subgroups
 		if (it->subgroup != nullptr) it->subgroup = PostProcess(it->subgroup);
 
 		// Here a new group CAN be started
@@ -99,7 +111,7 @@ Element* PostProcess(Element* parent) {
 	delete telomere;
 	return res;
 }
-// Convert the text into clusters of objects
+
 Element* ParseRegex(string txt) {
 	int i = 0;
 	Element* first = new Element;
@@ -161,7 +173,6 @@ bool isMultiplied(Element* prev, Element* current) {
 	return false;
 }
 
-// This is called when ( is met. It returns the last bracket index of this group
 int enterParanthese(int index, string txt) {
 	int count = 0;
 	int i = -1;
