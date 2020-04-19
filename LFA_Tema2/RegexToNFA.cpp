@@ -1,18 +1,6 @@
-#include <iostream>
-#include <vector>
-#include "Common.h"
-#include "DFA.h"
-#include "NFAGama.h"
+#include "RegexToNFA.h"
 
 using namespace std;
-
-void viewRegex(Element* tree, int order = 0);
-NFAGama ElementToDFA(Element* group);
-NFAGama RecursiveConvertToDFA(Element* group);
-Element* PostProcess(Element* parent);
-Element* ParseRegex(string txt);
-bool isMultiplied(Element* prev, Element* current);
-int enterParanthese(int index, string txt);
 
 void viewRegex(Element* tree, int order) {
 	cout << string(order, ' ') << "{" << endl;
@@ -169,7 +157,7 @@ Element* ParseRegex(string txt) {
 }
 
 bool isMultiplied(Element* prev, Element* current) {
-	if (prev->type == 0 || prev->type == 1 || prev->type == 3) return true;
+	if (prev->type == 0 || prev->type == 1) return true;
 	return false;
 }
 

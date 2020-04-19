@@ -32,10 +32,13 @@
     <ClInclude Include="DFA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
+    <ClInclude Include="NFAGama.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NFAGama.h">
+    <ClInclude Include="RegexToNFA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

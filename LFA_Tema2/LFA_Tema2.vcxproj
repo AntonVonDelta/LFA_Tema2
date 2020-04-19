@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
+    <ClInclude Include="RegexToNFA.h" />
     <ClInclude Include="DFA.h" />
     <ClInclude Include="NFAGama.h" />
   </ItemGroup>

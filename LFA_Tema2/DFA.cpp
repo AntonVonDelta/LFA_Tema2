@@ -1,6 +1,5 @@
 #include "DFA.h"
 #include <vector>
-#include "Common.h"
 
 string beautify(string str);
 
@@ -54,42 +53,6 @@ istream& operator >> (istream& f, DFA& M) {
 	}
 
 	return f;
-}
-
-void DFA::ApplyLoop() {
-	delta[{*(F.begin()), '.'}] = q0;
-	delta[{q0, '.'}] = *F.begin();
-}
-DFA DFA::ApplyOperation(DFA second, Element* operation) {
-	int next_state = 1;
-	for (auto state : Q) {
-		next_state = max(next_state, state);
-	}
-	next_state++;
-
-	int first_state = q0;
-	for (auto& [transition, output] : second.delta) {
-		delta[{transition.first + next_state, transition.second}] = output + next_state;
-
-		// Make this DFA complete
-		Q.insert(output + next_state);
-		Q.insert(transition.first + next_state);
-		Sigma.insert(transition.second);
-	}
-
-	// Addition
-	if (operation->type == 2) {
-		delta[{q0, '.'}] = second.q0 + next_state;
-		delta[{*(second.F.begin()) + next_state, '.'}] = *F.begin();
-	}
-
-	// Multiplication
-	if (operation->type == 4) {
-		delta[{*F.begin(), '.'}] = second.q0 + next_state;
-		F = { *(second.F.begin()) + next_state };
-	}
-
-	return *this;
 }
 
 string DFA::toRegex() {

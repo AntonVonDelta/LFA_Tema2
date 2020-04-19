@@ -1,19 +1,10 @@
 #include <iostream>
 #include <vector>
-#include "Common.h"
 #include "DFA.h"
 #include "NFAGama.h"
+#include "RegexToNFA.h"
 
 using namespace std;
-
-// Defined in RegexToNFA.cpp and declared here
-void viewRegex(Element* tree, int order = 0);
-NFAGama ElementToDFA(Element* group);
-NFAGama RecursiveConvertToDFA(Element* group);
-Element* PostProcess(Element* parent);
-Element* ParseRegex(string txt);
-bool isMultiplied(Element* prev, Element* current);
-int enterParanthese(int index, string txt);
 
 
 int main() {
@@ -30,7 +21,7 @@ int main() {
 
 	////////////////// REGEX TO DFA
 
-	string regex = M.toRegex();//  "ab(a+b)*+c";// 
+	string regex = "a"; //M.toRegex();//  "ab(a+b)*+c";// 
 	string test_words[] = { "a","aa","aba","abbbbbbbbbbbbbbba","abbaa","abbbcaaaa","ab","abababababababababa","c","ac" };
 	cout << "Regex : " << regex << endl;
 

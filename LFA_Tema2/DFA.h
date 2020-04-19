@@ -7,7 +7,6 @@
 #include <fstream>
 #include<cmath>
 #include<algorithm>
-#include "Common.h"
 
 using namespace std; 
 
@@ -37,10 +36,6 @@ public:
 	int getInitialState() const { return this->q0; }
 	map<pair<int, char>, int> getDelta() const { return this->delta; }
 
-	// Makes this DFA to loop on itself
-	// Equivalent to apllying * to this DFA
-	void ApplyLoop();
-	DFA ApplyOperation(DFA second, Element* operation);
 	string toRegex();
 
 
