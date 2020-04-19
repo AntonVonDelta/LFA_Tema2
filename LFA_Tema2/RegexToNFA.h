@@ -23,4 +23,6 @@ Element* ParseRegex(std::string txt);
 
 // Checks if the operation to be performed is multiplication
 bool isMultiplied(Element* prev, Element* current);
+
+// Enters the bracket and returns the index in the string at which the closing and corresponding bracket was found
 int enterParanthese(int index, std::string txt);
