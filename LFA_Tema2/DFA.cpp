@@ -85,12 +85,14 @@ string DFA::toRegex() {
 		regexDelta[{transition.first,string(1,transition.second)}]=output;
 	}
 
+	// The actual driving force for the algorithm
 	for (auto const& state : Q) {
 		if (state != q0 && state != *F.begin()) {
 			regex_removeState(state);
 		}
 	}
 
+	// Beautify some of the output while constructing it
 	string res("");
 	for (auto const& [transition, output] : regexDelta) {
 		if (transition.first == q0 && output == *F.begin()) {
@@ -108,6 +110,9 @@ void DFA::regex_removeState(int state) {
 	map<int, string> all_input_transition;
 	map<int, string> all_output_transition;
 
+	// The end format after the state is deleted is : <input regex>*<loop regex>*<output regex> 
+	// The input and output regex is constructed for each input state and output state. 
+	//If there one state there are more than one transitions into the current state, they are added together
 
 	// Get all loop-states : that go into itself
 	for (auto const& [transition, output] : regexDelta) {
@@ -119,9 +124,10 @@ void DFA::regex_removeState(int state) {
 
 	if(found_loop_transitions) loop_transitions=beautify(loop_transitions.substr(0, loop_transitions.size() - 1))+"*";
 
-	// Get input states
+	// Get input states.
 	for (auto const& [transition, output] : regexDelta) {
 		if (output == state && transition.first!=state) {
+			// If there are more than one transitions then they are added
 			all_input_transition[transition.first] += transition.second + "+";
 		}
 	}
@@ -129,26 +135,32 @@ void DFA::regex_removeState(int state) {
 	// Get output states
 	for (auto const& [transition, output] : regexDelta) {
 		if (transition.first == state && output!=state) {
+			// If there are more than one transitions then they are added
 			all_output_transition[output] += transition.second + "+";
 		}
 	}
 
+	// Combine the input regex with the output regex for each input and output states.
 	for (auto const& [input_state, input_regex] : all_input_transition) {
 		for (auto const& [output_state, output_regex] : all_output_transition) {
 			string input = beautify(input_regex.substr(0, input_regex.size()-1));
 			string output = beautify( output_regex.substr(0, output_regex.size() - 1));
 
+			// Combined in the final regex as a multiplication
 			regexDelta[{input_state,input + loop_transitions + output}] = output_state;
 		}
 	}
 
 	// Remove this state
+	// This is simply done by deleting or transition in and out of this state
 	auto itr = regexDelta.begin();
 	while (itr != regexDelta.end()) {
 		pair<int, string> transition = (*itr).first;
 		int output = (*itr).second;
 
 		if ( transition.first==state || output==state ) {
+			// The current iterator is invalidated but erase returns a new valid one. 
+			// Concerning the end() iterator it is always evaluated so it is always 'correct'
 			itr = regexDelta.erase(itr);
 		} else {
 			++itr;
