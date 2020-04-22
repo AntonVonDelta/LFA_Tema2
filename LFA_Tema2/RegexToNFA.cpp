@@ -46,7 +46,7 @@ NFAGama ElementToNFA(Element* group) {
 
 // Travels the current level of the given tree and performs <operation> between groups found
 NFAGama RecursiveConvertToNFA(Element* group) {
-	// The logic here: we get the first group and read until we hit an operator. Peek the next group and convert it to NFA
+	// The logic here: we get the first group,convert it to NFA and read until we hit an operator. Peek the next group and convert it to NFA
 	// Apply that operation between the previous NFA and the next one. The net result is that we operate on two groups at a time
 	// We are assured that the multiplication is configned to individual groups so reading `a+ab` will not add `a+a` and multiply `b`
 	//		we actually get this a+(ab) which is processed as a+ <recursive: a*b>
@@ -57,6 +57,8 @@ NFAGama RecursiveConvertToNFA(Element* group) {
 	NFAGama prev = ElementToNFA(it);
 
 	while (it != nullptr) {
+		// If the operation is addition or multiplication do the following : 
+		//		<prev> <it holds the curernt operation> <it->next holds the next element which certainy is character or group>
 		if (it->type == 2 || it->type == 4) {
 			prev = prev.ApplyOperation(ElementToNFA(it->next), it);
 		}
@@ -72,16 +74,19 @@ Element* PostProcess(Element* parent) {
 	//			i.e a+ab becomes a+(ab)
 
 	// We need this start Element altought it will not be returned (a.k.a it will be cut from the output)
+	// Make it root by making the parent passed to this function its next-element.
 	Element* telomere = new Element;
 	*telomere = { -1,string(""),false,parent,nullptr };
 
+	// Reset the root to be the telomere
 	parent = telomere;
 
-	Element* it = parent->next;
-	Element* prev_it = parent;
+	// Start parsing
+	Element* it = parent->next;		// iterator
+	Element* prev_it = parent;		// parent of current element
 
 	bool started_group = false;
-	Element* replacement = new Element;
+	Element* replacement = new Element;	// used to replace the multiplied elements with this element
 
 	*replacement = { 0, string(""), false, nullptr, nullptr };
 
