@@ -8,7 +8,7 @@ using namespace std;
 
 
 int main() {
-	// Function descriptions in RegexToNfa.h + explanations in the cpp (better to use VS)
+	// Function descriptions + explanations in the cpp (better to use VS)
 
 	////////////////// DFA TO REGEX
 	DFA M;
